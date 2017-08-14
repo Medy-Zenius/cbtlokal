@@ -1,4 +1,4 @@
-(defproject USBKSMP "0.1.0-SNAPSHOT"
+(defproject UBKSMA "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :min-lein-version "2.0.0"
@@ -24,8 +24,8 @@
   :ring {:handler icbl.handler/app
          :init icbl.handler/init
          :destroy icbl.handler/destroy
-         :port 24699
-         ;:port 5000
+         ;port 24699
+         :port 5000
          }
   :aot :all
   :profile

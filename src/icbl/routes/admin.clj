@@ -10,14 +10,6 @@
             [icbl.routes.teacher :as teacher]
             ))
 
-(defn num-to-str [number]
-  (let [snum (str number)]
-    (cond
-      (<= (count snum) 2) (str snum ",00")
-      (= (subs snum 1 2) ".") (if (= (count (subs snum 2 (count snum))) 1) (str (subs snum 0 1) "," (subs snum 2 3) "0")
-                                  (str (subs snum 0 1) "," (subs snum 2 (count snum))))
-      )))
-
 (defn admin-home []
   (layout/render "admin/home.html")
   )
