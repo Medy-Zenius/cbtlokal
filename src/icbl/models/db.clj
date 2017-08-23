@@ -9,9 +9,9 @@
 
 (def db
 {:subprotocol "postgresql"
-:subname "//localhost:5432/tosmalokal"
-:user "tosmp"
-:password "tosmp2000"})
+:subname "//localhost:5432/tosma"
+:user "tosma"
+:password "tosma2000"})
 
 (defmacro with-db [f & body]
 `(sql/with-connection ~db (~f ~@body)))
