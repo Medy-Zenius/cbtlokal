@@ -60,7 +60,8 @@
                                                (if (data :pretext) (read-string (data :pretext)) (repeat jsoal "-"))
                                                (if (data :pretext) (read-string (data :sound)) (repeat jsoal "-"))))
                  ;vjaw-acak vjaw
-                 vjaw1 (if (= "1" (data :acak)) (acak-soal vjaw) vjaw)
+                 ;vjaw1 (if (= "1" (data :acak)) (acak-soal vjaw) vjaw)
+                 vjaw1 (if (= "1" (data :acak)) (shuffle vjaw) vjaw)
                  nsoal (vec (map #(first %) vjaw1))
                  njenis (vec (map #(second %) vjaw1))
                  nupto (apply str (map #(str (nth % 2)) vjaw1))
@@ -110,7 +111,7 @@
                                              :jawaban jawaban
                                              :nilai nilai
                                              :tanggal (java.sql.Timestamp. (.getTime (java.util.Date.)))})
-              {:nilai nilai}
+              {:nilai nilai :skala skala}
                ;{:nilai nil}
               (catch Exception ex
                 {:nilai nil}))
@@ -121,7 +122,7 @@
                                        :jawaban jawaban
                                        :nilai nilai
                                        :tanggal (java.sql.Timestamp. (.getTime (java.util.Date.)))})
-               {:nilai nilai}
+               {:nilai nilai :skala skala}
                (catch Exception ex
                 {:nilai nil}))
            )))
