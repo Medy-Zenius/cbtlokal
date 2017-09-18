@@ -135,7 +135,7 @@
                                 :jumpil jumpil
                                 :acak "0"
                                 :status "0"
-                                :skala 10
+                                :skala 100
                                 :nbenar 1
                                 :nsalah 0})
       (layout/render "admin/pesan.html" {:pesan (str "Berhasil daftarkan proset!")})
@@ -341,8 +341,9 @@
 
 (defn handle-input-siswa [file]
   (let [data (slurp (:tempfile file))
-        sdata (st/split data #"\n")
-        vdata (map #(st/split % #",") (if (not (vector? sdata)) (st/split data #"\r") sdata))
+        sdata (st/replace data #"\n" "")
+        sdata1 (st/replace sdata #";" ",")
+        vdata (map #(st/split % #",") (st/split sdata #"\r"))
         ;coba (spit (str vdata) "coba.txt")
         ]
         (loop [i 0]

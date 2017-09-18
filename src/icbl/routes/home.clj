@@ -134,8 +134,11 @@
 
 (defn home-registrasi-siswa []
   (let [daftarkelas (db/get-data "select namakelas from kelas order by namakelas asc" 2)
-        kelas (:namakelas (first daftarkelas))]
-    (layout/render "share/registrasi-siswa.html" {:daftarkelas daftarkelas :kelas kelas})))
+        ;kelas (:namakelas (first daftarkelas))
+        ]
+    (layout/render "share/registrasi-siswa.html" {:daftarkelas daftarkelas
+                                                  ;:kelas kelas
+                                                  })))
 
 (defn handle-reg-siswa [nis nama kelas email pw1 pw2]
   (let [user (db/get-data (str "select nis from users where nis='" nis "'") 1)

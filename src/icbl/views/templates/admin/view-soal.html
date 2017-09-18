@@ -147,7 +147,7 @@
       }
     }
     function ganti_nomer(){
-        var vno=document.getElementById("sel_no").value;
+        var vno=document.getElementById("selno").value;
         no=parseInt(vno)+1;
         if (vkat == "1"){
           get_soal1(path + '/bankproset/'+ '{{pel}}' + '/' + {{datum.kode}} + '/' + ns[no-1] + '.png');
@@ -167,7 +167,7 @@
    <h4 align="center">Kode Soal: {{kode}} - {{datum.pelajaran}} - {{datum.keterangan}}</h4>
    <div class="row">
     <div class="col-sm-2">
-     <select class="form-control" id="sel_no" onchange="ganti_nomer()">
+     <select class="form-control" id="selno" onchange="ganti_nomer()">
                <script>
                    for (i=0;i<jsoal;i++){
                        document.write('<option id="o'+i+'" value='+i+'>'+(i+1)+' ('+jwb[i]+')</option>');
@@ -178,7 +178,7 @@
    <div class="col-sm-2">
      <div class="panel panel-primary">
        <div class="panel-body  text-center" id="xdarit">
-          1 dari {{data.jsoal}}
+          1 dari {{datum.jsoal}}
        </div>
      </div>
   </div>
