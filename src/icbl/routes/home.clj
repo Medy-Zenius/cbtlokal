@@ -23,7 +23,8 @@
            (layout/render "share/login.html"
                           {:error "Password Salah!" :nis nis}))
          (layout/render "share/login.html"
-                          {:error "Tidak ada user dengan NIS tersebut!"}))
+                          {:error "Tidak ada user dengan NIS tersebut!"
+                           :path1 (str "http://" ip "/resources/public/logo.png")}))
     ))
 
 (defn acak-soal
@@ -60,7 +61,8 @@
                                                (if (data :pretext) (read-string (data :pretext)) (repeat jsoal "-"))
                                                (if (data :pretext) (read-string (data :sound)) (repeat jsoal "-"))))
                  ;vjaw-acak vjaw
-                 vjaw1 (if (= "1" (data :acak)) (acak-soal vjaw) vjaw)
+                 ;vjaw1 (if (= "1" (data :acak)) (acak-soal vjaw) vjaw)
+                 vjaw1 (if (= "1" (data :acak)) (shuffle vjaw) vjaw)
                  nsoal (vec (map #(first %) vjaw1))
                  njenis (vec (map #(second %) vjaw1))
                  nupto (apply str (map #(str (nth % 2)) vjaw1))
@@ -110,7 +112,7 @@
                                              :jawaban jawaban
                                              :nilai nilai
                                              :tanggal (java.sql.Timestamp. (.getTime (java.util.Date.)))})
-              {:nilai nilai}
+              {:nilai nilai :skala skala}
                ;{:nilai nil}
               (catch Exception ex
                 {:nilai nil}))
@@ -121,13 +123,17 @@
                                        :jawaban jawaban
                                        :nilai nilai
                                        :tanggal (java.sql.Timestamp. (.getTime (java.util.Date.)))})
-               {:nilai nilai}
+               {:nilai nilai :skala skala}
                (catch Exception ex
                 {:nilai nil}))
            )))
 
 (defn home-login []
-  (layout/render "share/login.html"))
+  (let [path1 (str "http://"
+                (:ipnumber (db/get-data "select ipnumber from ip where no=1" 1))
+                 "/resources/public/logo.png")]
+  (layout/render "share/login.html"
+                 {:path1 path1})))
 
 (defn home []
   (layout/render "home/home.html"))

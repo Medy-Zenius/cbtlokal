@@ -2,6 +2,7 @@
   (:require [compojure.core :refer :all]
             [clojure.string :as st]
             [icbl.views.layout :as layout]
+            ;[icbl.views.layoutadmin :as layoutadmin]
             [noir.response :as resp]
             [noir.io :as io]
             [icbl.models.db :as db]
@@ -63,7 +64,8 @@
     (if (or (not= pwlama pwnow) (< (count pwbaru) 5))
         (layout/render "admin/pesan.html" {:pesan "Password Lama tidak benar atau password baru kurang dari lima huruf!"})
         (if (= pwbaru pwbaru1)
-          (try (spit "data/pw.txt" pwbaru)
+          (try ;(spit "data/pw.txt" pwbaru)
+               (db/update-data "admin" (str "id='" "admin" "'") {:pass pwbaru})
                  (layout/render "admin/pesan.html" {:pesan "Berhasil mengubah password admin!"})
                (catch Exception ex
                   (layout/render "admin/pesan.html" {:pesan "Gagal mengubah data password admin!"})))
@@ -394,7 +396,10 @@
       (handle-login pass))
 
   (GET "/edit-siswa" []
-       (layout/render "admin/search-siswa.html"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (layout/render "admin/search-siswa.html")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/edit-siswa" [nama]
         (handle-list-nama nama))
   (POST "/do-edit-siswa" [nis]
