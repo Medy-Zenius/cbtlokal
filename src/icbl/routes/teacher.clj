@@ -61,6 +61,7 @@
                                 ;:sound (str (vec (repeat (Integer/parseInt jsoal) "-")))
                                 :acak "0"
                                 :status "0"
+                                :munculnilai "0"
                                 :skala 10
                                 :nbenar 1
                                 :nsalah 0})
@@ -78,7 +79,7 @@
         datum (db/get-data (str "select * from proset where kode='" postkode "'") 1)]
     (layout/render "teacher/edit-proset.html" {:datum datum :kode kode})))
 
-(defn teacher-update-proset [kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status]
+(defn teacher-update-proset [kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status munculnilai]
   (let [postkode (subs kode 1 (count kode))
         datum (db/get-data (str "select kunci,jenis,upto,pretext,sound from proset where kode='" postkode "'") 1)
         oldkunci (datum :kunci)
@@ -119,6 +120,7 @@
                      :jumpil jumpil
                      :acak acak
                      :status status
+                     :munculnilai munculnilai
                      :kunci newkunci
                      :jenis newjenis
                      :upto newupto
@@ -634,8 +636,8 @@
        (teacher-lihat-proset (session/get :id)))
   (POST "/teacher-edit-proset" [kode]
         (teacher-edit-proset kode))
-  (POST "/teacher-update-proset" [kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status]
-        (teacher-update-proset kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status))
+  (POST "/teacher-update-proset" [kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status munculnilai]
+        (teacher-update-proset kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status munculnilai))
 
   (GET "/teacher-upload-file" []
        (teacher-pilih-proset "L" (session/get :id) "/teacher-upload-file"))

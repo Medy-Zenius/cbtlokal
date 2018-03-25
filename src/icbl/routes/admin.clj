@@ -137,6 +137,7 @@
                                 :jumpil jumpil
                                 :acak "0"
                                 :status "0"
+                                :munculnilai "0"
                                 :skala 100
                                 :nbenar 1
                                 :nsalah 0})
@@ -157,7 +158,7 @@
         datum (db/get-data (str "select * from bankproset where kode='" postkode "'") 1)]
     (layout/render "admin/edit-proset.html" {:datum datum :kode kode})))
 
-(defn admin-update-proset [kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status]
+(defn admin-update-proset [kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status munculnilai]
   (let [postkode (subs kode 1 (count kode))
         datum (db/get-data (str "select kunci,jenis,upto,pretext,sound from bankproset where kode='" postkode "'") 1)
         oldkunci (datum :kunci)
@@ -199,6 +200,7 @@
                      :jumpil jumpil
                      :acak acak
                      :status status
+                     :munculnilai munculnilai
                      :kunci newkunci
                      :jenis newjenis
                      :upto newupto
@@ -601,8 +603,8 @@
         (handle-admin-search-proset pel ket "/admin-edit-proset"))
   (POST "/admin-edit-proset" [kode]
         (admin-edit-proset kode))
-  (POST "/admin-update-proset" [kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status]
-         (admin-update-proset kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status))
+  (POST "/admin-update-proset" [kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status munculnilai]
+         (admin-update-proset kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status munculnilai))
 
   (GET "/admin-upload-file" []
        (admin-search-proset "/admin-pilih-proset1"))

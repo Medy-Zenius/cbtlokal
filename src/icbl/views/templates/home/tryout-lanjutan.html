@@ -4,6 +4,7 @@
 
 <script>
     var path='{{path}}';
+    var mnil=localStorage.mnil;
     var vid=localStorage.id;
     var vnis=localStorage.nis;
     var jumpil=localStorage.jumpil;
@@ -241,7 +242,12 @@
     }
 
     function habis_waktu() {
-        var vby='<button class="btn btn-warning" data-toggle="modal" data-target=".bs-example-modal-sm" onClick="simpan()">KIRIM</button>';
+        var vby='';
+        if (mnil == '0'){
+          vby='<button class="btn btn-warning" onClick="simpan()">KIRIM</button>';
+        } else {
+          vby='<button class="btn btn-warning" data-toggle="modal" data-target=".bs-example-modal-sm" onClick="simpan()">KIRIM</button>';
+        }
         var vbn='<a href="/"><button class="btn btn-warning">BATAL</button></a>';
         taktif(true);
         wDOM('pesan','<span class="bg-danger text-danger">Waktu Habis !</span><br><span class="bg-warning text-warning">Klik tombol KIRIM untuk mengirim jawaban ke server, atau BATAL jika tidak mau mengirim ke server!</span><br>');
@@ -282,7 +288,12 @@
     }
 
     function selesai(){
-        var vby='<button class="btn btn-success" data-toggle="modal" data-target=".bs-example-modal-sm" onClick="simpan()">YA</button>';
+        var vby='';
+        if (mnil == '0'){
+          vby='<button class="btn btn-warning" onClick="simpan()">KIRIM</button>';
+        } else {
+          vby='<button class="btn btn-warning" data-toggle="modal" data-target=".bs-example-modal-sm" onClick="simpan()">KIRIM</button>';
+        }
         var vbn='<button class="btn btn-success" onClick="batal()">TIDAK</button>';
         taktif(true);
         wDOM('pesan','<span class="bg-danger text-danger">Yakin selesai mengerjakan Ujian ?  </span>');
@@ -323,39 +334,41 @@
            wDOM('no_button',"");
         }else {
            var snilai = vdata.nilai/vdata.skala * 100;
-
-           wDOM('pesan', '<span class="bg-success text-success"> Data telah disimpan di server. Nilai Ujian Kamu: <b id="snilai">'+vdata.nilai+'</b>   </span>');
            var nres = '<div><b id="snilaim">' + vdata.nilai+"</b></div>";
-           document.getElementById("mod-content").innerHTML = nres;
-           counter(vdata.nilai, vdata.skala);
+           if (mnil == '0'){
+              wDOM('pesan','<span class="bg-success text-success"> Data telah disimpan di server. Silakan logout dan tunggu pengumuman  </span>');
+           } else {
+               wDOM('pesan', '<span class="bg-success text-success"> Data telah disimpan di server. Nilai Ujian Kamu: <b id="snilai">'+vdata.nilai+'</b>   </span>');
+               document.getElementById("mod-content").innerHTML = nres;
+               counter(vdata.nilai, vdata.skala);
 
-           if (snilai < 30){
-              document.getElementById('snilai').classList='s-bronze';
-              document.getElementById('bronze1').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-fill-mode: forwards;');
-           } else if (snilai < 60){
-              document.getElementById('snilai').classList='s-bronze';
-              document.getElementById('bronze1').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-fill-mode: forwards;');
-              document.getElementById('bronze2').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-delay: 0.5s; animation-fill-mode: forwards;');
-           } else if (snilai < 80){
-              document.getElementById('snilai').classList='s-bronze';
-              document.getElementById('bronze1').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-fill-mode: forwards;');
-              document.getElementById('bronze2').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-delay: 0.5s; animation-fill-mode: forwards;');
-              document.getElementById('bronze3').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-delay: 1s; animation-fill-mode: forwards;');
-           } else if (snilai < 90){
-              document.getElementById('snilai').classList='s-silver';
-              document.getElementById('bronze1').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-fill-mode: forwards;');
-              document.getElementById('bronze2').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-delay: 0.5s; animation-fill-mode: forwards;');
-              document.getElementById('bronze3').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-delay: 1s; animation-fill-mode: forwards;');
-              document.getElementById('silver').setAttribute('style','animation-name: star-ex; animation-duration: 0.6s; animation-delay: 1.6s; animation-fill-mode: forwards;');
-           } else if (snilai <= 100){
-              document.getElementById('snilai').classList='s-gold';
-              document.getElementById('bronze1').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-fill-mode: forwards;');
-              document.getElementById('bronze2').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-delay: 0.5s; animation-fill-mode: forwards;');
-              document.getElementById('bronze3').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-delay: 1s; animation-fill-mode: forwards;');
-              document.getElementById('silver').setAttribute('style','animation-name: star-ex; animation-duration: 0.6s; animation-delay: 1.6s; animation-fill-mode: forwards;');
-              document.getElementById('gold').setAttribute('style','animation-name: star-ex2; animation-duration: 0.6s; animation-delay: 2.1s; animation-fill-mode: forwards;');
+               if (snilai < 30){
+                  document.getElementById('snilai').classList='s-bronze';
+                  document.getElementById('bronze1').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-fill-mode: forwards;');
+               } else if (snilai < 60){
+                  document.getElementById('snilai').classList='s-bronze';
+                  document.getElementById('bronze1').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-fill-mode: forwards;');
+                  document.getElementById('bronze2').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-delay: 0.5s; animation-fill-mode: forwards;');
+               } else if (snilai < 80){
+                  document.getElementById('snilai').classList='s-bronze';
+                  document.getElementById('bronze1').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-fill-mode: forwards;');
+                  document.getElementById('bronze2').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-delay: 0.5s; animation-fill-mode: forwards;');
+                  document.getElementById('bronze3').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-delay: 1s; animation-fill-mode: forwards;');
+               } else if (snilai < 90){
+                  document.getElementById('snilai').classList='s-silver';
+                  document.getElementById('bronze1').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-fill-mode: forwards;');
+                  document.getElementById('bronze2').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-delay: 0.5s; animation-fill-mode: forwards;');
+                  document.getElementById('bronze3').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-delay: 1s; animation-fill-mode: forwards;');
+                  document.getElementById('silver').setAttribute('style','animation-name: star-ex; animation-duration: 0.6s; animation-delay: 1.6s; animation-fill-mode: forwards;');
+               } else if (snilai <= 100){
+                  document.getElementById('snilai').classList='s-gold';
+                  document.getElementById('bronze1').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-fill-mode: forwards;');
+                  document.getElementById('bronze2').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-delay: 0.5s; animation-fill-mode: forwards;');
+                  document.getElementById('bronze3').setAttribute('style','animation-name: star-op; animation-duration: 1s; animation-delay: 1s; animation-fill-mode: forwards;');
+                  document.getElementById('silver').setAttribute('style','animation-name: star-ex; animation-duration: 0.6s; animation-delay: 1.6s; animation-fill-mode: forwards;');
+                  document.getElementById('gold').setAttribute('style','animation-name: star-ex2; animation-duration: 0.6s; animation-delay: 2.1s; animation-fill-mode: forwards;');
+               }
            }
-
            wDOM('ya_button',vby);
            wDOM('no_button','');
            localStorage.clear();
