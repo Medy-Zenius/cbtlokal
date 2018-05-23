@@ -256,6 +256,7 @@
                                              :pel pel
                                              :npretext (if (datum :pretext) (read-string (datum :pretext)) nil)
                                              :nsound (if (datum :sound) (read-string (datum :sound)) nil)
+                                             :kode (str "B" kode)
                                              ;:soalpath "http://127.0.0.1/resources/public"
                                              })))
 
