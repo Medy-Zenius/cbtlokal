@@ -23,7 +23,8 @@
            (layout/render "share/login.html"
                           {:error "Password Salah!" :nis nis}))
          (layout/render "share/login.html"
-                          {:error "Tidak ada user dengan NIS tersebut!"}))
+                          {:error "Tidak ada user dengan NIS tersebut!"
+                           :path1 (str "http://" ip "/resources/public/logo.png")}))
     ))
 
 (defn acak-soal
@@ -128,7 +129,11 @@
            )))
 
 (defn home-login []
-  (layout/render "share/login.html"))
+  (let [path1 (str "http://"
+                (:ipnumber (db/get-data "select ipnumber from ip where no=1" 1))
+                 "/resources/public/logo.png")]
+  (layout/render "share/login.html"
+                 {:path1 path1})))
 
 (defn home []
   (layout/render "home/home.html"))

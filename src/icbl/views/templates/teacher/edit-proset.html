@@ -7,9 +7,11 @@
             document.pf.ket.value=document.getElementById('ket').value;
             document.pf.jsoal.value=document.getElementById('jsoal').value;
             document.pf.waktu.value=document.getElementById('waktu').value;
+            document.pf.waktudetik.value=document.getElementById('waktudetik').value;
             document.pf.jumpil.value=document.getElementById('jumpil').value;
             document.pf.acak.value=document.getElementById('acak').value;
             document.pf.status.value=document.getElementById('status').value;
+            document.pf.munculnilai.value=document.getElementById('munculnilai').value;
             document.pf.skala.value=document.getElementById('skala').value;
             document.pf.nbenar.value=document.getElementById('nbenar').value;
             document.pf.nsalah.value=document.getElementById('nsalah').value;
@@ -75,7 +77,13 @@
               <input type="text" class="form-control" id="waktu" value="{{datum.waktu}}">
            </div>
         </div>
-        <div class="col-sm-9"></div>
+        <div class="col-sm-1">menit</div>
+        <div class="col-sm-1">
+           <div class="form-group">
+              <input type="text" class="form-control" id="waktudetik" value="{{datum.waktudetik}}">
+           </div>
+        </div>
+        <div class="col-sm-7">detik</div>
       </div>
       <div class="row">
         <div class="col-sm-2">
@@ -144,6 +152,17 @@
         <div class="col-sm-9"></div>
       </div>
       <div class="row">
+        <div class="col-sm-2">
+          <h5 class="text-right">Muncul Nilai:</h5>
+        </div>
+        <div class="col-sm-1">
+           <div class="form-group">
+              <input type="text" class="form-control" id="munculnilai" value="{{datum.munculnilai}}">
+           </div>
+        </div>
+        <div class="col-sm-9"></div>
+      </div>
+      <div class="row">
         <div class="col-sm-2"></div>
         <div class="col-sm-2">
            <div class="form-group">
@@ -166,9 +185,11 @@
         <input type="hidden" name="ket">
         <input type="hidden" name="jsoal">
         <input type="hidden" name="waktu">
+        <input type="hidden" name="waktudetik">
         <input type="hidden" name="jumpil">
         <input type="hidden" name="acak">
         <input type="hidden" name="status">
+        <input type="hidden" name="munculnilai">
         <input type="hidden" name="skala">
         <input type="hidden" name="nbenar">
         <input type="hidden" name="nsalah">

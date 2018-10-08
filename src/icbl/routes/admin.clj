@@ -2,6 +2,7 @@
   (:require [compojure.core :refer :all]
             [clojure.string :as st]
             [icbl.views.layout :as layout]
+            ;[icbl.views.layoutadmin :as layoutadmin]
             [noir.response :as resp]
             [noir.io :as io]
             [icbl.models.db :as db]
@@ -63,7 +64,8 @@
     (if (or (not= pwlama pwnow) (< (count pwbaru) 5))
         (layout/render "admin/pesan.html" {:pesan "Password Lama tidak benar atau password baru kurang dari lima huruf!"})
         (if (= pwbaru pwbaru1)
-          (try (spit "data/pw.txt" pwbaru)
+          (try ;(spit "data/pw.txt" pwbaru)
+               (db/update-data "admin" (str "id='" "admin" "'") {:pass pwbaru})
                  (layout/render "admin/pesan.html" {:pesan "Berhasil mengubah password admin!"})
                (catch Exception ex
                   (layout/render "admin/pesan.html" {:pesan "Gagal mengubah data password admin!"})))
@@ -135,6 +137,7 @@
                                 :jumpil jumpil
                                 :acak "0"
                                 :status "0"
+                                :munculnilai "0"
                                 :skala 100
                                 :nbenar 1
                                 :nsalah 0})
@@ -155,7 +158,7 @@
         datum (db/get-data (str "select * from bankproset where kode='" postkode "'") 1)]
     (layout/render "admin/edit-proset.html" {:datum datum :kode kode})))
 
-(defn admin-update-proset [kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status]
+(defn admin-update-proset [kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status munculnilai]
   (let [postkode (subs kode 1 (count kode))
         datum (db/get-data (str "select kunci,jenis,upto,pretext,sound from bankproset where kode='" postkode "'") 1)
         oldkunci (datum :kunci)
@@ -197,6 +200,7 @@
                      :jumpil jumpil
                      :acak acak
                      :status status
+                     :munculnilai munculnilai
                      :kunci newkunci
                      :jenis newjenis
                      :upto newupto
@@ -395,7 +399,10 @@
       (handle-login pass))
 
   (GET "/edit-siswa" []
-       (layout/render "admin/search-siswa.html"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (layout/render "admin/search-siswa.html")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/edit-siswa" [nama]
         (handle-list-nama nama))
   (POST "/do-edit-siswa" [nis]
@@ -405,61 +412,95 @@
   (POST "/delete-data-siswa" [nislama]
         (handle-delete-data-siswa nislama))
   (GET "/admin-delete-siswa" []
-       (admin-delete-siswa "/admin-delete-siswa"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-delete-siswa "/admin-delete-siswa")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/admin-delete-siswa" [nis]
         (handle-hapus-siswa nis))
 
   (GET "/admin-tambah-kelas" []
-       (layout/render "admin/tambah-kelas.html"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (layout/render "admin/tambah-kelas.html")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/admin-tambah-kelas" [kelas]
         (handle-admin-tambah-kelas kelas))
 
   (GET "/admin-edit-kelas" []
-       (admin-view-kelas))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-view-kelas)
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/admin-edit-kelas" [nomer]
       (admin-edit-kelas nomer))
   (POST "/admin-update-kelas" [nomer namakelas]
       (admin-update-kelas nomer namakelas))
 
   (GET "/admin-tambah-pelajaran" []
-       (layout/render "admin/tambah-pelajaran.html"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (layout/render "admin/tambah-pelajaran.html")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
   (POST "/admin-tambah-pelajaran" [pelajaran]
         (handle-admin-tambah-pelajaran pelajaran))
 
   (GET "/admin-edit-pelajaran" []
-       (admin-view-pelajaran))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-view-pelajaran)
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/admin-edit-pelajaran" [nomer]
       (admin-edit-pelajaran nomer))
   (POST "/admin-update-pelajaran" [nomer pelajaran]
       (admin-update-pelajaran nomer pelajaran))
 
   (GET "/ganti-pw-admin" []
-       (layout/render "admin/ganti-pw-admin.html"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (layout/render "admin/ganti-pw-admin.html")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/ganti-pw-admin" [pwlama pwbaru pwbaru1]
         (handle-ganti-pw-admin pwlama pwbaru pwbaru1))
 
   (GET "/lihat-guru" []
-       (lihat-guru))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (lihat-guru)
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/edit-guru" [id]
         (handle-edit-guru id))
   (POST "/update-guru" [id nama pass]
         (handle-update-guru id nama pass))
   (GET "/admin-hapus-guru" []
-       (admin-hapus-guru "/admin-hapus-guru"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-hapus-guru "/admin-hapus-guru")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/admin-hapus-guru" [id]
         (handle-hapus-guru id))
 
   (GET "/daftarkan-guru" []
-       (daftarkan-guru))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (daftarkan-guru)
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/daftarkan-guru" [id nama]
         (handle-daftarkan-guru id nama))
 
   (GET "/admin-hasil-testL" []
-       (admin-pilih-guru "/admin-pilih-proset"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-pilih-guru "/admin-pilih-proset")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/admin-pilih-proset" [id]
         (teacher/teacher-pilih-proset "L" id "/teacher-pilih-kelas"))
   (GET "/admin-hasil-testB" []
-       (admin-search-proset "/admin-hasil-test-search"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-search-proset "/admin-hasil-test-search")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/admin-hasil-test-search" [pel ket]
        (handle-admin-search-proset pel ket "/admin-pilih-kelasB"))
   (POST "/admin-pilih-kelasB" [kode]
@@ -469,48 +510,72 @@
 
   ;;Analisis Butir Soal
   (GET "/admin-abs" []
-        (admin-pilih-guru "/admin-pilih-proset-absbsk"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-pilih-guru "/admin-pilih-proset-absbsk")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/admin-pilih-proset-absbsk" [id]
         (teacher/teacher-pilih-proset "L" id "/teacher-abs"))
 
   (GET "/admin-abs-tk" []
-       (admin-pilih-guru "/admin-pilih-proset-abstk"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-pilih-guru "/admin-pilih-proset-abstk")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/admin-pilih-proset-abstk" [id]
        (teacher/teacher-pilih-proset "L" id "/teacher-abs-tk"))
 
   (GET "/admin-abs-dp" []
-       (admin-pilih-guru "/admin-pilih-proset-absdp"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-pilih-guru "/admin-pilih-proset-absdp")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/admin-pilih-proset-absdp" [id]
        (teacher/teacher-pilih-proset "L" id "/teacher-abs-dp"))
 
   (GET "/admin-dayakecoh" []
-       (admin-pilih-guru "/admin-pilih-proset-absdk"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-pilih-guru "/admin-pilih-proset-absdk")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
    (POST "/admin-pilih-proset-absdk" [id]
        (teacher/teacher-pilih-proset "L" id "/teacher-dayakecoh"))
 
   (GET "/admin-absB" []
-       (admin-search-proset "/admin-absB-search"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-search-proset "/admin-absB-search")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/admin-absB-search" [pel ket]
        (handle-admin-search-proset pel ket "/admin-absB"))
   (POST "/admin-absB" [kode]
         (teacher/teacher-abs kode "teacher/hasil-abs.html"))
 
   (GET "/admin-abs-tkB" []
-       (admin-search-proset "/admin-abs-tkB-search"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-search-proset "/admin-abs-tkB-search")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/admin-abs-tkB-search" [pel ket]
        (handle-admin-search-proset pel ket "/admin-abs-tkB"))
   (POST "/admin-abs-tkB" [kode]
         (teacher/teacher-abs-tk kode "teacher/hasil-abs-tk.html"))
 
   (GET "/admin-abs-dpB" []
-       (admin-search-proset "/admin-abs-dpB-search"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-search-proset "/admin-abs-dpB-search")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/admin-abs-dpB-search" [pel ket]
        (handle-admin-search-proset pel ket "/admin-abs-dpB"))
   (POST "/admin-abs-dpB" [kode]
         (teacher/teacher-abs-dp kode "teacher/hasil-abs-dp.html"))
 
   (GET "/admin-dayakecohB" []
-       (admin-search-proset "/admin-dayakecohB-search"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-search-proset "/admin-dayakecohB-search")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/admin-dayakecohB-search" [pel ket]
        (handle-admin-search-proset pel ket "/admin-dayakecohB"))
   (POST "/admin-dayakecohB" [kode]
@@ -519,32 +584,53 @@
   ;;Simpan ke Excel
 
   (GET "/admin-hasil-test-excel" []
-       (admin-pilih-guru "/admin-pilih-proset-excel"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-pilih-guru "/admin-pilih-proset-excel")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
   (POST "/admin-pilih-proset-excel" [id]
        (teacher/teacher-pilih-proset "L" id "/teacher-pilih-kelas-excel"))
 
   (GET "/admin-abs-excel" []
-        (admin-pilih-guru "/admin-pilih-proset-abs-excel"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-pilih-guru "/admin-pilih-proset-abs-excel")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
    (POST "/admin-pilih-proset-abs-excel" [id]
        (teacher/teacher-pilih-proset "L" id "/teacher-abs-excel"))
 
   (GET "/admin-abs-tk-excel" []
-        (admin-pilih-guru "/admin-pilih-proset-abstk-excel"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-pilih-guru "/admin-pilih-proset-abstk-excel")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
    (POST "/admin-pilih-proset-abstk-excel" [id]
        (teacher/teacher-pilih-proset "L" id "/teacher-abs-tk-excel"))
 
   (GET "/admin-abs-dp-excel" []
-        (admin-pilih-guru "/admin-pilih-proset-absdp-excel"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-pilih-guru "/admin-pilih-proset-absdp-excel")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
    (POST "/admin-pilih-proset-absdp-excel" [id]
        (teacher/teacher-pilih-proset "L" id "/teacher-abs-dp-excel"))
 
   (GET "/admin-adk-excel" []
-        (admin-pilih-guru "/admin-pilih-proset-adk-excel"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-pilih-guru "/admin-pilih-proset-adk-excel")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
    (POST "/admin-pilih-proset-adk-excel" [id]
        (teacher/teacher-pilih-proset "L" id "/teacher-adk-excel"))
 
   (GET "/admin-hasil-test-excelB" []
-       (admin-search-proset "/admin-hasil-test-excelB-search"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-search-proset "/admin-hasil-test-excelB-search")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
   (POST "/admin-hasil-test-excelB-search" [pel ket]
        (handle-admin-search-proset pel ket "/admin-pilih-kelas-excelB"))
   (POST "/admin-pilih-kelas-excelB" [kode]
@@ -553,55 +639,87 @@
         (teacher/teacher-hasil-test kode kelas "teacher/hasil-test-excel.html"))
 
   (GET "/admin-abs-excelB" []
-       (admin-search-proset "/admin-abs-excelB-search"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-search-proset "/admin-abs-excelB-search")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
   (POST "/admin-abs-excelB-search" [pel ket]
        (handle-admin-search-proset pel ket "/admin-abs-excelB"))
   (POST "/admin-abs-excelB" [kode]
         (teacher/teacher-abs kode "teacher/hasil-abs-excel.html"))
 
   (GET "/admin-abs-tk-excelB" []
-       (admin-search-proset "/admin-abs-tk-excelB-search"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-search-proset "/admin-abs-tk-excelB-search")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
   (POST "/admin-abs-tk-excelB-search" [pel ket]
        (handle-admin-search-proset pel ket "/admin-abs-tk-excelB"))
   (POST "/admin-abs-tk-excelB" [kode]
         (teacher/teacher-abs-tk kode "teacher/hasil-abs-tk-excel.html"))
 
   (GET "/admin-abs-dp-excelB" []
-       (admin-search-proset "/admin-abs-dp-excelB-search"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-search-proset "/admin-abs-dp-excelB-search")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
   (POST "/admin-abs-dp-excelB-search" [pel ket]
        (handle-admin-search-proset pel ket "/admin-abs-dp-excelB"))
   (POST "/admin-abs-dp-excelB" [kode]
         (teacher/teacher-abs-dp kode "teacher/hasil-abs-dp-excel.html"))
 
   (GET "/admin-adk-excelB" []
-       (admin-search-proset "/admin-adk-excelB-search"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-search-proset "/admin-adk-excelB-search")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
   (POST "/admin-adk-excelB-search" [pel ket]
        (handle-admin-search-proset pel ket "/admin-adk-excelB"))
   (POST "/admin-adk-excelB" [kode]
         (teacher/teacher-dayakecoh kode "teacher/hasil-adk-excel.html"))
 
   (GET "/admin-set-ip" []
-       (admin-set-ip))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-set-ip)
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
   (POST "/admin-change-ip" [ipnumber]
         (admin-update-ip ipnumber))
 
   (GET "/admin-buat-proset" []
-       (let [data (db/get-data  "select pelajaran from pelajaranbs order by pelajaran" 2)]
-         (layout/render "admin/buat-proset.html" {:data data})))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (let [data (db/get-data  "select pelajaran from pelajaranbs order by pelajaran" 2)]
+                 (layout/render "admin/buat-proset.html" {:data data}))
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
   (POST "/admin-buat-proset" [pel ket jsoal waktu jumpil]
         (handle-admin-buat-proset pel ket jsoal waktu jumpil))
 
   (GET "/admin-search-proset" []
-       (admin-search-proset "/admin-search-proset1"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-search-proset "/admin-search-proset1")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
   (POST "/admin-search-proset1" [pel ket]
         (handle-admin-search-proset pel ket "/admin-edit-proset"))
   (POST "/admin-edit-proset" [kode]
         (admin-edit-proset kode))
-  (POST "/admin-update-proset" [kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status]
-         (admin-update-proset kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status))
+  (POST "/admin-update-proset" [kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status munculnilai]
+         (admin-update-proset kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status munculnilai))
 
   (GET "/admin-upload-file" []
-       (admin-search-proset "/admin-pilih-proset1"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-search-proset "/admin-pilih-proset1")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
   (POST "/admin-pilih-proset1" [pel ket]
        (handle-admin-search-proset pel ket "/admin-upload-file1"))
   (POST "/admin-upload-file1" [kode pel]
@@ -610,7 +728,11 @@
         (handle-admin-upload pel kode file))
 
   (GET "/admin-edit-kunci" []
-       (admin-search-proset "/admin-edit-kunci-search"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-search-proset "/admin-edit-kunci-search")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
   (POST "/admin-edit-kunci-search" [pel ket]
       (handle-admin-search-proset pel ket "/admin-edit-kunci1"))
   (POST "/admin-edit-kunci1" [kode]
@@ -619,21 +741,33 @@
         (admin-save-kunci kunci jenis upto (str "[" pretext "]") (str "[" sound "]") kode))
 
   (GET "/admin-lihat-soal" []
-       (admin-search-proset "/admin-lihat-soal-search"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-search-proset "/admin-lihat-soal-search")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
   (POST "/admin-lihat-soal-search" [pel ket]
       (handle-admin-search-proset pel ket "/admin-lihat-soal1"))
   (POST "/admin-lihat-soal1" [pel kode]
         (admin-view-soal pel (subs kode 1 (count kode))))
 
   (GET "/admin-lihat-sekaligus" []
-       (admin-search-proset "/admin-lihat-sekaligus-search"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-search-proset "/admin-lihat-sekaligus-search")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
   (POST "/admin-lihat-sekaligus-search" [pel ket]
       (handle-admin-search-proset pel ket "/admin-lihat-sekaligus1"))
   (POST "/admin-lihat-sekaligus1" [pel kode]
         (admin-lihat-sekaligus pel kode))
 
   (GET "/admin-hapus-set" []
-       (admin-search-proset "/admin-hapus-set-search"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (admin-search-proset "/admin-hapus-set-search")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
   (POST "/admin-hapus-set-search" [pel ket]
       (handle-admin-search-proset pel ket "/admin-confirm-hapus"))
   (POST "/admin-confirm-hapus" [kode pel ket]
@@ -644,7 +778,11 @@
         (admin-hapus-set pel ket (subs kode 1 (count kode))))
 
   (GET "/admin-input-siswa" []
-       (layout/render "admin/input-siswa.html"))
+       (let [nama (session/get :id)]
+       (if (= nama "admin")
+           (layout/render "admin/input-siswa.html")
+           (layout/render "admin/pesan.html" {:pesan "forbidden access attempt !"}))))
+
   (POST "/admin-input-siswa" [file]
         (handle-input-siswa file))
 )
