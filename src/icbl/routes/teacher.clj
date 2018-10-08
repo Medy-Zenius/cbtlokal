@@ -46,13 +46,14 @@
    (session/clear!)
    (resp/redirect "/teacher")))
 
-(defn handle-teacher-buat-proset [pel ket jsoal waktu jumpil]
+(defn handle-teacher-buat-proset [pel ket jsoal waktu waktudetik jumpil]
   (try
       (db/insert-data "proset" {:id (session/get :id)
                                 :pelajaran pel
                                 :keterangan ket
                                 :jsoal (Integer/parseInt jsoal)
                                 :waktu (Integer/parseInt waktu)
+                                :waktudetik (Integer/parseInt waktudetik)
                                 :jumpil jumpil
                                 :kunci (apply str (repeat (Integer/parseInt jsoal) "-"))
                                 :jenis (apply str (repeat (Integer/parseInt jsoal) "1"))
@@ -79,7 +80,7 @@
         datum (db/get-data (str "select * from proset where kode='" postkode "'") 1)]
     (layout/render "teacher/edit-proset.html" {:datum datum :kode kode})))
 
-(defn teacher-update-proset [kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status munculnilai]
+(defn teacher-update-proset [kode pel ket jsoal waktu waktudetik jumpil skala nbenar nsalah acak status munculnilai]
   (let [postkode (subs kode 1 (count kode))
         datum (db/get-data (str "select kunci,jenis,upto,pretext,sound from proset where kode='" postkode "'") 1)
         oldkunci (datum :kunci)
@@ -117,6 +118,7 @@
                     {:pelajaran pel :keterangan ket
                      :jsoal vjsoal
                      :waktu (Integer/parseInt waktu)
+                     :waktudetik (Integer/parseInt waktudetik)
                      :jumpil jumpil
                      :acak acak
                      :status status
@@ -629,15 +631,15 @@
 
   (GET "/teacher-buat-proset" []
        (layout/render "teacher/buat-proset.html"))
-  (POST "/teacher-buat-proset" [pel ket jsoal waktu jumpil]
-        (handle-teacher-buat-proset pel ket jsoal waktu jumpil))
+  (POST "/teacher-buat-proset" [pel ket jsoal waktu waktudetik jumpil]
+        (handle-teacher-buat-proset pel ket jsoal waktu waktudetik jumpil))
 
   (GET "/teacher-lihat-proset" []
        (teacher-lihat-proset (session/get :id)))
   (POST "/teacher-edit-proset" [kode]
         (teacher-edit-proset kode))
-  (POST "/teacher-update-proset" [kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status munculnilai]
-        (teacher-update-proset kode pel ket jsoal waktu jumpil skala nbenar nsalah acak status munculnilai))
+  (POST "/teacher-update-proset" [kode pel ket jsoal waktu waktudetik jumpil skala nbenar nsalah acak status munculnilai]
+        (teacher-update-proset kode pel ket jsoal waktu waktudetik jumpil skala nbenar nsalah acak status munculnilai))
 
   (GET "/teacher-upload-file" []
        (teacher-pilih-proset "L" (session/get :id) "/teacher-upload-file"))
